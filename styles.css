@@ -1,0 +1,250 @@
+/* styles.css — code-screen vibe + small-print wall layout */
+
+:root{
+  --bg: #000;
+  --panel: rgba(8, 10, 14, 0.92);
+  --line: rgba(124, 255, 200, 0.14);
+
+  --fg: rgba(232, 245, 255, 0.88);
+  --dim: rgba(232, 245, 255, 0.58);
+
+  --kw: #7cffc8;   /* green */
+  --fn: #9ad1ff;   /* blue */
+  --num:#ffd36b;   /* amber */
+  --red:#ff2a2a;   /* underglow */
+
+  --mono: ui-monospace, "Courier New", Courier, monospace;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; margin:0; }
+body{
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+
+  /* minimal bloom, low noise */
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(124,255,200,0.05), transparent 55%),
+    radial-gradient(circle at 20% 35%, rgba(154,209,255,0.035), transparent 60%);
+}
+
+.page{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 14px 34px;
+}
+
+.topbar{
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 10px 12px;
+}
+
+.row{ line-height: 1.35; font-size: 12px; }
+.kw{ color: var(--kw); }
+.fn{ color: var(--fn); }
+.dim{ color: var(--dim); }
+
+.link{
+  color: var(--fn);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(154,209,255,0.3);
+}
+.link:hover{
+  color: var(--fg);
+  border-bottom-color: rgba(232,245,255,0.5);
+}
+
+.main{ margin-top: 14px; }
+
+.panel{
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.panel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 8px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(124,255,200,0.10);
+  color: var(--dim);
+}
+
+.panel-body{ padding: 12px; }
+
+/* ===== wall mode (small prints, fixed-ish size) ===== */
+.wall{
+  position: relative;
+  min-height: 70vh;
+}
+
+/* each print */
+.card{
+  position: absolute;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.card:hover{
+  filter: drop-shadow(0 0 10px rgba(255,42,42,0.16));
+  transform: rotate(calc(var(--rot, 0deg) * 0.55)) scale(1.02);
+}
+
+/* frame wrapper hugs the print */
+.frame{
+  position: relative;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(232,245,255,0.10);
+  padding: 7px;
+}
+
+/* image = small print: no cropping */
+.frame img{
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border: 1px solid rgba(255,255,255,0.10);
+
+  /* subtle red underglow */
+  box-shadow:
+    0 18px 14px rgba(255,42,42,0.10),
+    0 8px 12px rgba(179,0,0,0.10);
+}
+
+/* heavy ascii frame overlay (auto-fit by js) */
+.ascii-frame{
+  pointer-events:none;
+  position:absolute;
+  inset: 6px;
+  margin:0;
+  padding:0;
+
+  color: rgba(232,245,255,0.45);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 12px;
+  white-space: pre;
+
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  text-shadow: 0 0 10px rgba(124,255,200,0.05);
+}
+
+/* signature */
+.sig{
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(124,255,200,0.10);
+}
+.owl{
+  margin:0;
+  white-space: pre;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 12px;
+  color: rgba(232,245,255,0.38);
+}
+
+/* ===== lightbox ===== */
+.lightbox{
+  position:fixed;
+  inset:0;
+  display:none;
+  place-items:center;
+  background: rgba(0,0,0,0.78);
+  padding: 20px;
+}
+.lightbox.open{ display:grid; }
+
+.lb-box{
+  width: min(1100px, 96vw);
+  max-height: 90vh;
+  border: 1px solid rgba(232,245,255,0.20);
+  background: rgba(8,10,14,0.96);
+  padding: 10px;
+  position:relative;
+}
+
+#lb-img{
+  width:100%;
+  max-height: 74vh;
+  object-fit: contain;
+  display:block;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 26px 22px rgba(255,42,42,0.10);
+}
+
+.lb-cap{
+  margin-top: 8px;
+  color: rgba(232,245,255,0.60);
+  font-size: 12px;
+}
+.lb-cap::before{
+  content: "// ";
+  color: rgba(242, 255, 154, 0.35);
+}
+
+.lb-close{
+  position:absolute;
+  top:8px;
+  right:8px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.35);
+  color: var(--fg);
+  font-family: var(--mono);
+  padding: 4px 10px;
+  cursor:pointer;
+}
+.lb-close:hover{
+  border-color: rgba(124,255,200,0.35);
+  color: rgba(124,255,200,0.95);
+}
+#fishterm {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  padding: 16px;
+  z-index: 0;
+  pointer-events: none;
+
+  white-space: pre;
+  font-family: ui-monospace, sfmono-regular, menlo, consolas, "liberation mono", monospace;
+  font-size: 14px;
+  line-height: 16px;
+
+  opacity: 0.35;
+  color: rgba(160, 220, 255, 0.9);
+  text-shadow: 0 0 12px rgba(120, 200, 255, 0.18);
+}
+
+.page {
+  position: relative;
+  z-index: 2;
+}
+/* fish background stays behind everything */
+#fishterm {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* main content layer */
+.page {
+  position: relative;
+  z-index: 2;
+}
+
+/* lightbox must be above ALL layers */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
